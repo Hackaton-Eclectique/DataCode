@@ -129,3 +129,5 @@ dmypy.json
 .pyre/
 selenium
 .ipynb_checkpoints
+
+.DS_Store
