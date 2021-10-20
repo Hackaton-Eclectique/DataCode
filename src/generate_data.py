@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import datetime
+from pymongo import MongoClient
 
 def get_data_glucose(date1, date2):
     
@@ -51,4 +52,45 @@ def get_data_hemoglobine(date1, date2):
 def clean_date(df, col):
     df['Dates'] = pd.to_datetime(df[col]).dt.date
     df['Time'] = pd.to_datetime(df[col]).dt.time
+
+    df['year']= df['Date'].dt.year
+    df['month']= df['Date'].dt.month
+    df['day']= df['Date'].dt.day
+    df['hour']= df['Date'].dt.hour
+
+    df.drop(["Dates", "Date", "Time"], axis = 1, inplace = True )
     return df
+
+
+def hb (col):
+    if col in range(0,71):
+        return 4
+    elif col in range(71,101):
+        return 5
+    elif col in range(101,127):
+        return 6
+    elif col in range(127,153):
+        return 7
+    elif col in range(153,184):
+        return 8
+    elif col in range(184,213):
+        return 9
+    elif col in range(213,241):
+        return 10
+    elif col in range(241,270):
+        return 11
+    else:
+        return 12
+    
+def insert_data (df, nombre):
+      
+    client = MongoClient()
+    db = client.Diabetes
+    collection = db.create_collection(name = f"{nombre}")
+    collection = db[f"{nombre}"]
+
+    data = df.to_dict(orient='records')
+    #print(data)
+    collection.insert_many(data)
+    
+    return "Done"
